@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music2, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import UploadZone from './components/UploadZone';
@@ -81,8 +82,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white font-sans">
 
-      {/* Background */}
-      <div className="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] pointer-events-none"></div>
+      {/* Background - Local noise pattern */}
+      <div className="fixed inset-0 opacity-[0.02] pointer-events-none" style={{
+        backgroundImage: `
+          repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(255,255,255,.1) 1px, rgba(255,255,255,.1) 2px),
+          repeating-linear-gradient(-45deg, transparent, transparent 1px, rgba(255,255,255,.1) 1px, rgba(255,255,255,.1) 2px)
+        `
+      }}></div>
 
       {/* Main container with proper max-width */}
       <div className="min-h-screen flex flex-col max-w-6xl mx-auto">

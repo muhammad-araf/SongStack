@@ -2,6 +2,8 @@
 
 A modern, responsive web application that extracts song names from playlist screenshots and manually entered text, then automatically downloads them. Features AI-powered OCR detection plus manual song input for maximum flexibility.
 
+**Live Demo**: [https://songstack.vercel.app](https://songstack.vercel.app)
+
 ## ✨ Features
 
 - 🎯 **Smart OCR Detection** - AI-powered text extraction using Tesseract.js
@@ -15,6 +17,8 @@ A modern, responsive web application that extracts song names from playlist scre
 - 🎨 **Premium UI** - Modern, fully responsive design with smooth animations
 - 📱 **Mobile Optimized** - Works seamlessly on phones, tablets, and desktops
 - 🔒 **Privacy First** - All processing happens client-side in your browser
+- 🌐 **SEO Optimized** - Complete SEO setup with metadata and structured data
+- 📦 **PWA Ready** - Can be installed as a web app on mobile devices
 
 ## Getting Started
 
@@ -136,3 +140,46 @@ Contributions are welcome! Feel free to:
 ## 📄 License
 
 MIT License - See LICENSE file for details
+
+---
+
+## 📊 Project Statistics
+
+- **Version**: 2.3
+- **Last Updated**: February 5, 2026
+- **Framework**: Next.js 16
+- **Type**: TypeScript
+- **UI Framework**: Tailwind CSS v4
+- **Total Components**: 4 (UploadZone, ManualSongInput, SongConfirmation, DownloadProgress)
+- **Custom Hooks**: 2 (useOCR, useDownload)
+- **LOC**: ~2000+ lines of production code
+
+## 🚀 Future Enhancements
+
+- [ ] Spotify playlist import
+- [ ] Apple Music support
+- [ ] Cloud storage integration (Google Drive, Dropbox)
+- [ ] Playlist creation and export
+- [ ] Multiple language support
+- [ ] Dark/Light theme toggle
+- [ ] Advanced filtering and sorting
+- [ ] Download history tracking
+- [ ] Batch scheduling
+- [ ] API for programmatic access
+
+## 💬 Support & Feedback
+
+For issues, questions, or feature requests, please open an issue on GitHub or contact the team.
+
+## 🙏 Acknowledgments
+
+- **Tesseract.js** - For OCR capabilities
+- **yt-search** - For YouTube search
+- **ytdl-core** - For downloading capabilities
+- **Framer Motion** - For smooth animations
+- **Tailwind CSS** - For styling
+- **Next.js** - For the React framework
+
+---
+
+**Made with ❤️ by the SongStack Team**

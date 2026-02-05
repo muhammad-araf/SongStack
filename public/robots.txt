@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /.next/
+Disallow: /api/
+
+# Specific rules for search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Sitemap
+Sitemap: https://songstack.vercel.app/sitemap.xml

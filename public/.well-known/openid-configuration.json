@@ -1,0 +1,6 @@
+{
+  "issuer": "https://songstack.vercel.app",
+  "jwks_uri": "https://songstack.vercel.app/.well-known/jwks.json",
+  "authorization_endpoint": "https://songstack.vercel.app/api/auth",
+  "token_endpoint": "https://songstack.vercel.app/api/token"
+}
