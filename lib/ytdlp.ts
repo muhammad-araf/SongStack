@@ -38,33 +38,46 @@ export async function searchSong(query: string): Promise<any> {
  * Spawns a yt-dlp process to stream audio to stdout
  */
 export function streamAudio(videoUrl: string) {
-    // Basic Arguments
     const args = [
         '-m', 'yt_dlp',
         '-f', 'bestaudio',
         '-o', '-',
         '--quiet',
         '--no-warnings',
-        // Anti-Bot / Reliability Args
         '--no-playlist',
         '--no-check-certificate',
         '--prefer-free-formats',
         '--geo-bypass',
-        // Spoofing
-        '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        '--extractor-args', 'youtube:player_client=android' // Android client is often more lenient
     ];
 
-    // Handle Cookies if provided in ENV (for solving "Sign in to confirm you're not a bot")
+    // Handle Cookies if provided in ENV
     if (process.env.YOUTUBE_COOKIES) {
         try {
             const cookiePath = path.join(os.tmpdir(), 'yt_cookies.txt');
-            fs.writeFileSync(cookiePath, process.env.YOUTUBE_COOKIES);
+            // Ensure proper newlines are preserved if they were lost in Env var
+            let cookieContent = process.env.YOUTUBE_COOKIES;
+            // Basic check to see if we need to fix formatting (rare but possible in some envs)
+
+            fs.writeFileSync(cookiePath, cookieContent);
+
             args.push('--cookies', cookiePath);
-            console.log('Using provided YouTube Cookies for authentication');
+            console.log(`Using provided YouTube Cookies. File size: ${fs.statSync(cookiePath).size} bytes`);
+
+            // Cuando using cookies, we SHOULD NOT spoof the client as Android or force a User-Agent,
+            // because it might conflict with the browser session in the cookies.
+            // We rely purely on the authenticated session.
+
         } catch (e) {
             console.error('Failed to write cookie file:', e);
         }
+    } else {
+        // NO Cookies provided: Try "Android Client" spoofing as a fallback.
+        // This is less reliable but better than nothing for unauthenticated requests.
+        console.log('No cookies found. Using Android client spoofing.');
+        args.push(
+            '--user-agent', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+            '--extractor-args', 'youtube:player_client=android'
+        );
     }
 
     // Add URL last
@@ -84,8 +97,6 @@ export function streamAudio(videoUrl: string) {
     ytProcess.on('close', (code) => {
         if (code !== 0) {
             console.error(`yt-dlp stream failed with code ${code}: ${stderr}`);
-            // We can't really "emit" an error on stdout if it's already ended, but we can log it.
-            // Attempts to destroy the stream with error might help if it's still active.
             ytProcess.stdout.destroy(new Error(`yt-dlp exited with code ${code}: ${stderr}`));
         } else {
             console.log(`yt-dlp stream completed successfully for: ${videoUrl}`);
