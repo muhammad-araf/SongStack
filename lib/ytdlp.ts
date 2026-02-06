@@ -1,64 +1,35 @@
 import { spawn } from 'child_process';
 import path from 'path';
 
+import yts from 'yt-search';
+
 export async function searchSong(query: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-        // Use 'python' on Windows, 'python3' on Linux/Mac/Docker
-        const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+    try {
+        console.log(`Searching via yt-search for: ${query}`);
+        const result = await yts(query);
 
-        // Command: python -m yt_dlp --dump-json "ytsearch1:Query"
-        const ytDlp = spawn(pythonCommand, [
-            '-m', 'yt_dlp',
-            '--dump-json',
-            '--default-search', 'ytsearch1',
-            '--no-playlist',
-            '--quiet',
-            '--no-warnings',
-            query
-        ]);
+        if (!result || !result.videos || result.videos.length === 0) {
+            console.log("No results found in yt-search");
+            return null;
+        }
 
-        let stdout = '';
-        let stderr = '';
+        const video = result.videos[0];
 
-        ytDlp.stdout.on('data', (data) => {
-            stdout += data.toString();
-        });
+        return {
+            title: video.title,
+            id: video.videoId,
+            url: video.url,
+            thumbnail: video.thumbnail,
+            duration: video.timestamp, // or video.seconds
+            uploader: video.author.name,
+            views: video.views
+        };
 
-        ytDlp.stderr.on('data', (data) => {
-            stderr += data.toString();
-        });
-
-        ytDlp.on('close', (code) => {
-            if (code !== 0) {
-                console.error(`yt-dlp search failed: ${stderr}`);
-                if (code === 127 || stderr.includes('not found')) {
-                    reject(new Error('python command not found or yt-dlp module missing.'));
-                } else {
-                    resolve(null); // No results found logic
-                }
-                return;
-            }
-
-            try {
-                if (!stdout.trim()) {
-                    resolve(null);
-                    return;
-                }
-                const data = JSON.parse(stdout);
-                resolve({
-                    title: data.title,
-                    id: data.id,
-                    url: data.webpage_url,
-                    thumbnail: data.thumbnail,
-                    duration: data.duration,
-                    uploader: data.uploader,
-                    views: data.view_count
-                });
-            } catch (err) {
-                reject(new Error(`Failed to parse yt-dlp output: ${err}`));
-            }
-        });
-    });
+    } catch (error: any) {
+        console.error(`yt-search failed: ${error.message}`);
+        // Fallback or just return null
+        return null;
+    }
 }
 
 /**
