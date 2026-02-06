@@ -54,29 +54,26 @@ export function streamAudio(videoUrl: string) {
     if (process.env.YOUTUBE_COOKIES) {
         try {
             const cookiePath = path.join(os.tmpdir(), 'yt_cookies.txt');
-            // Ensure proper newlines are preserved if they were lost in Env var
+
+            // SANITIZATION: Fix potential newline issues from Env Var copy-pasting
             let cookieContent = process.env.YOUTUBE_COOKIES;
-            // Basic check to see if we need to fix formatting (rare but possible in some envs)
+            if (cookieContent.includes('\\n')) {
+                cookieContent = cookieContent.replace(/\\n/g, '\n');
+            }
 
             fs.writeFileSync(cookiePath, cookieContent);
 
             args.push('--cookies', cookiePath);
             console.log(`Using provided YouTube Cookies. File size: ${fs.statSync(cookiePath).size} bytes`);
 
-            // Cuando using cookies, we SHOULD NOT spoof the client as Android or force a User-Agent,
-            // because it might conflict with the browser session in the cookies.
-            // We rely purely on the authenticated session.
-
         } catch (e) {
             console.error('Failed to write cookie file:', e);
         }
     } else {
-        // NO Cookies provided: Try "Android Client" spoofing as a fallback.
-        // This is less reliable but better than nothing for unauthenticated requests.
-        console.log('No cookies found. Using Android client spoofing.');
+        // Fallback spoofing if no cookies
+        console.log('No cookies found. Using iOS client spoofing.');
         args.push(
-            '--user-agent', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
-            '--extractor-args', 'youtube:player_client=android'
+            '--extractor-args', 'youtube:player_client=ios'
         );
     }
 
