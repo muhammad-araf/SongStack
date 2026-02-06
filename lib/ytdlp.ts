@@ -51,5 +51,22 @@ export function streamAudio(videoUrl: string) {
 
     console.log(`Spawning yt-dlp stream via ${pythonCommand} for: ${videoUrl}`);
     const ytProcess = spawn(pythonCommand, args);
+
+    let stderr = '';
+    ytProcess.stderr.on('data', (data) => {
+        stderr += data.toString();
+    });
+
+    ytProcess.on('close', (code) => {
+        if (code !== 0) {
+            console.error(`yt-dlp stream failed with code ${code}: ${stderr}`);
+            // We can't really "emit" an error on stdout if it's already ended, but we can log it.
+            // Attempts to destroy the stream with error might help if it's still active.
+            ytProcess.stdout.destroy(new Error(`yt-dlp exited with code ${code}: ${stderr}`));
+        } else {
+            console.log(`yt-dlp stream completed successfully for: ${videoUrl}`);
+        }
+    });
+
     return ytProcess.stdout;
 }
