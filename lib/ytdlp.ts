@@ -1,5 +1,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
+import fs from 'fs';
+import os from 'os';
 
 import yts from 'yt-search';
 
@@ -36,15 +38,37 @@ export async function searchSong(query: string): Promise<any> {
  * Spawns a yt-dlp process to stream audio to stdout
  */
 export function streamAudio(videoUrl: string) {
-    // Command: python -m yt_dlp -f bestaudio -o - "URL"
+    // Basic Arguments
     const args = [
         '-m', 'yt_dlp',
-        '-f', 'bestaudio',      // Best audio quality
-        '-o', '-',             // Output to stdout
-        '--quiet',             // Suppress progress output
+        '-f', 'bestaudio',
+        '-o', '-',
+        '--quiet',
         '--no-warnings',
-        videoUrl
+        // Anti-Bot / Reliability Args
+        '--no-playlist',
+        '--no-check-certificate',
+        '--prefer-free-formats',
+        '--geo-bypass',
+        // Spoofing
+        '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        '--extractor-args', 'youtube:player_client=android' // Android client is often more lenient
     ];
+
+    // Handle Cookies if provided in ENV (for solving "Sign in to confirm you're not a bot")
+    if (process.env.YOUTUBE_COOKIES) {
+        try {
+            const cookiePath = path.join(os.tmpdir(), 'yt_cookies.txt');
+            fs.writeFileSync(cookiePath, process.env.YOUTUBE_COOKIES);
+            args.push('--cookies', cookiePath);
+            console.log('Using provided YouTube Cookies for authentication');
+        } catch (e) {
+            console.error('Failed to write cookie file:', e);
+        }
+    }
+
+    // Add URL last
+    args.push(videoUrl);
 
     // Use 'python' on Windows, 'python3' on Linux/Mac/Docker
     const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
