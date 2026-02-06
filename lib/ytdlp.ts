@@ -79,6 +79,6 @@ export function streamAudio(videoUrl: string) {
     const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
 
     console.log(`Spawning yt-dlp stream via ${pythonCommand} for: ${videoUrl}`);
-    const process = spawn(pythonCommand, args);
-    return process.stdout;
+    const ytProcess = spawn(pythonCommand, args);
+    return ytProcess.stdout;
 }
