@@ -9,16 +9,16 @@ import { useState, useCallback } from 'react';
 // Helper function to format duration
 const formatDuration = (durationStr: string | number | undefined): string => {
     if (!durationStr) return '0:00';
-    
+
     // If it's a string like "3:45", return as is
     if (typeof durationStr === 'string' && durationStr.includes(':')) {
         return durationStr;
     }
-    
+
     // If it's seconds as number or string
     const seconds = typeof durationStr === 'string' ? parseInt(durationStr, 10) : durationStr;
     if (isNaN(seconds)) return '0:00';
-    
+
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
@@ -27,11 +27,11 @@ const formatDuration = (durationStr: string | number | undefined): string => {
 // Helper function to format file size
 const formatFileSize = (bytes: number | undefined): string => {
     if (!bytes || bytes === 0) return '0 B';
-    
+
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return Math.round((bytes / Math.pow(k, i)) * 10) / 10 + ' ' + sizes[i];
 };
 
@@ -44,6 +44,7 @@ export interface SongDownloadStatus {
     duration?: string;
     url?: string;
     fileSize?: string;
+    thumbnail?: string;
 }
 
 export interface UseDownloadResult {
@@ -100,16 +101,17 @@ export function useDownload(): UseDownloadResult {
                 }
 
                 const searchData = await searchResponse.json();
-                
+
                 // Extract and format duration
                 const rawDuration = searchData.duration || searchData.length || '0:00';
                 const formattedDuration = formatDuration(rawDuration);
-                
-                updateDownload(songName, { 
-                    status: 'downloading', 
+
+                updateDownload(songName, {
+                    status: 'downloading',
                     progress: 30,
                     duration: formattedDuration,
                     url: searchData.url,
+                    thumbnail: searchData.thumbnail,
                 });
 
                 // Download using our internal proxy (Zero Redirects)
@@ -127,7 +129,7 @@ export function useDownload(): UseDownloadResult {
                 // Get the blob and create download link
                 const blob = await downloadResponse.blob();
                 const fileSize = formatFileSize(blob.size);
-                
+
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;

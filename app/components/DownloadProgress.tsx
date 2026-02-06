@@ -11,7 +11,9 @@ interface SongDownloadStatus {
     downloadedFile?: string;
     duration?: string;
     url?: string;
+
     fileSize?: string;
+    thumbnail?: string;
 }
 
 interface DownloadProgressProps {
@@ -126,16 +128,40 @@ export default function DownloadProgress({ downloads, overallProgress, onCancelD
                             >
                                 {/* Main row */}
                                 <div className="flex items-center gap-4">
-                                    {/* Status Icon */}
-                                    <div className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-black ${statusDetails.bg}`}>
-                                        {statusDetails.icon}
+                                    {/* Status Icon or Thumbnail */}
+                                    <div className={`shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center overflow-hidden bg-zinc-800 ${!item.thumbnail ? statusDetails.bg : ''}`}>
+                                        {item.thumbnail ? (
+                                            <div className="relative w-full h-full">
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img
+                                                    src={item.thumbnail}
+                                                    alt={name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                {/* Overlay status icon on corner if needed, or just let the simple UI speak for itself */}
+                                                {item.status === 'complete' && (
+                                                    <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+                                                        <Check className="w-5 h-5 text-white drop-shadow-md" strokeWidth={3} />
+                                                    </div>
+                                                )}
+                                                {item.status === 'error' && (
+                                                    <div className="absolute inset-0 bg-red-500/30 flex items-center justify-center">
+                                                        <XCircle className="w-5 h-5 text-white drop-shadow-md" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className={`text-black ${statusDetails.text.replace('text-', 'text-black')}`}>
+                                                {statusDetails.icon}
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Song Name & Duration & File Size */}
                                     <div className="flex-1 min-w-0">
                                         <p className={`text-sm font-medium truncate ${item.status === 'complete' ? 'text-zinc-200' :
-                                                item.status === 'downloading' ? 'text-white' :
-                                                    'text-zinc-500'
+                                            item.status === 'downloading' ? 'text-white' :
+                                                'text-zinc-500'
                                             }`}>
                                             {name}
                                         </p>
@@ -190,18 +216,16 @@ export default function DownloadProgress({ downloads, overallProgress, onCancelD
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${item.progress}%` }}
                                                 transition={{ duration: 0.3 }}
-                                                className={`h-full rounded-full ${
-                                                    item.status === 'searching' 
-                                                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500' 
-                                                        : 'bg-gradient-to-r from-blue-500 to-cyan-500'
-                                                }`}
+                                                className={`h-full rounded-full ${item.status === 'searching'
+                                                    ? 'bg-linear-to-r from-yellow-500 to-orange-500'
+                                                    : 'bg-linear-to-r from-blue-500 to-cyan-500'
+                                                    }`}
                                             />
                                         </div>
-                                        <span className={`text-xs font-semibold tabular-nums ${
-                                            item.status === 'searching' 
-                                                ? 'text-yellow-400' 
-                                                : 'text-blue-400'
-                                        }`}>{item.progress}%</span>
+                                        <span className={`text-xs font-semibold tabular-nums ${item.status === 'searching'
+                                            ? 'text-yellow-400'
+                                            : 'text-blue-400'
+                                            }`}>{item.progress}%</span>
                                     </div>
                                 )}
                             </motion.div>

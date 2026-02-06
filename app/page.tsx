@@ -131,13 +131,20 @@ export default function Home() {
               <div className="w-full max-w-2xl">
                 {/* Headline - CLEAR HIERARCHY */}
                 <div className="text-center mb-10 sm:mb-12">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    <span className="text-xs font-mono font-medium text-zinc-300 tracking-wide uppercase">High Quality Music</span>
+                  </div>
                   <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3 tracking-tight">Batch Download Songs</h2>
                   <p className="text-zinc-400 text-base sm:text-lg">Upload a playlist screenshot to extract and download all songs</p>
                 </div>
 
                 {/* Upload Zone with integrated processing state */}
-                <UploadZone 
-                  onImageUpload={handleImageUpload} 
+                <UploadZone
+                  onImageUpload={handleImageUpload}
                   isProcessing={isProcessing}
                   progress={progress}
                   onCancelScan={handleCancelScan}
@@ -206,6 +213,16 @@ export default function Home() {
 
         </main>
 
+        {/* WEBSITE DESCRIPTION */}
+        <div className="px-6 sm:px-8 py-12 border-t border-zinc-900/50">
+          <div className="max-w-3xl mx-auto text-center space-y-4">
+            <h3 className="text-zinc-500 font-bold text-xs uppercase tracking-[0.2em] font-mono">How it works</h3>
+            <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-mono opacity-80">
+              SongStack transforms your playlist screenshots into MP3s. Simply upload an image of your tracks, and our AI will identify and download the high-quality audio for you automatically.
+            </p>
+          </div>
+        </div>
+
         {/* FOOTER */}
         <footer className="py-6 px-6 sm:px-8 text-center border-t border-zinc-900">
           <p className="text-xs text-zinc-600">SongStack Audio Engine</p>
@@ -224,11 +241,10 @@ function StepPill({ number, label, isActive, isCompleted }: { number: number; la
       ${isActive ? 'bg-white text-black border-white shadow-lg shadow-white/20' : ''}
       ${!isActive && !isCompleted ? 'bg-zinc-900/40 border-zinc-700 text-zinc-500' : ''}
     `}>
-      <span className={`w-5 sm:w-6 h-5 sm:h-6 rounded-full text-[9px] sm:text-xs font-bold flex items-center justify-center flex-shrink-0 transition-all ${
-        isCompleted ? 'bg-white text-black' :
+      <span className={`w-5 sm:w-6 h-5 sm:h-6 rounded-full text-[9px] sm:text-xs font-bold flex items-center justify-center flex-shrink-0 transition-all ${isCompleted ? 'bg-white text-black' :
         isActive ? 'bg-black text-white' :
-        'bg-zinc-700 text-zinc-400'
-      }`}>
+          'bg-zinc-700 text-zinc-400'
+        }`}>
         {isCompleted ? '✓' : number}
       </span>
       <span className="text-xs sm:text-sm font-semibold hidden sm:inline">{label}</span>
