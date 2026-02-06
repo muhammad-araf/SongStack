@@ -3,8 +3,11 @@ import path from 'path';
 
 export async function searchSong(query: string): Promise<any> {
     return new Promise((resolve, reject) => {
+        // Use 'python' on Windows, 'python3' on Linux/Mac/Docker
+        const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
         // Command: python -m yt_dlp --dump-json "ytsearch1:Query"
-        const ytDlp = spawn('python', [ // Use 'python' for Windows
+        const ytDlp = spawn(pythonCommand, [
             '-m', 'yt_dlp',
             '--dump-json',
             '--default-search', 'ytsearch1',
@@ -72,7 +75,10 @@ export function streamAudio(videoUrl: string) {
         videoUrl
     ];
 
-    console.log(`Spawning yt-dlp stream via python for: ${videoUrl}`);
-    const process = spawn('python', args);
+    // Use 'python' on Windows, 'python3' on Linux/Mac/Docker
+    const pythonCommand = process.platform === 'win32' ? 'python' : 'python3';
+
+    console.log(`Spawning yt-dlp stream via ${pythonCommand} for: ${videoUrl}`);
+    const process = spawn(pythonCommand, args);
     return process.stdout;
 }

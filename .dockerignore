@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.vscode
+.env*
+! .env.example
+build.log
+README.md
+Dockerfile
